@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html ng-app="vultureFacts">
+
+<head>
+    <meta charset="utf-8" lang="en">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vulture Facts and Quiz</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1>Vulture
+ Facts Quiz</h1>
+            <p>People have often asked me the age-old question - "Shamyle, what is your spirit animal?"
+                <br>
+                <br> My normal response as a child used to be "cat" or "dog" primarily because these were the only animals I was accustomed to and also because I didn't know what a spirit animal actually is. And then I found my animal one day. It was during one of my darkest days that I discovered this animal.
+                <br>
+                <br> Worried about my future often kept me awake at night so I would regularly listen to podcasts to make me sleep. One night, I was tuned to Stuff You Should Know and the hosts were going to talk about vultures. They're considered ugly and smelly, but vultures prevent the spread of disease on account of their scavenging instinct. In a world without vultures, rotting meat would be rampant. These birds excel at finding and eating this meat so you don't get to see dead animals everywhere. Let's also not forget that a vulture typically has no natural predator. Who wants to eat a smelly, ugly vulture right?
+                <br>
+                <br> Well, they get to rule the food chain. And most importantly, vultures aren't actually ugly.
+                <br>
+                <br>They are majestic and with some species having wing spans of over 10 feet, you are truly missing out on an incredible feat of nature if you find the sight of this amazing bird repulsive. Read up on some of the most popular species and test yourself! </p>
+            <h3>
+            Learn about all the vultures below before you decide to take on the <strong>VULTURE QUIZ</strong>
+        </h3>
+        </div>
+        <div ng-controller="listCtrl as list" ng-hide="list.quizMetrics.quizActive || list.quizMetrics.resultsActive">
+            <form class="form-inline well well-sm clearfix">
+                <span class="glyphicon glyphicon-search">
+                </span>
+                <input type="text" placeholder="Search..." class="form-control" ng-model="list.search">
+                <button ng-click="list.activateQuiz()" class="btn btn-warning pull-right"><strong>Start Quiz</strong></button>
+            </form>
+            <div class="row">
+                <div class="col-sm-6" ng-repeat="vulture in list.data | filter:list.search">
+                    <div class="well well-sm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img ng-src="{{vulture.image_url}}" class="img-rounded img-responsive well-image">
+                            </div>
+                            <div class="col-md-6 ">
+                                <h4>{{vulture.type}}</h4>
+                                <p><strong>Locations:</strong>{{vulture.locations}}</p>
+                                <p><strong>Size:</strong>{{vulture.size}}</p>
+                                <p><strong>Average Lifespan:</strong>{{vulture.lifespan}}</p>
+                                <p><strong>Diet:</strong>{{vulture.diet}}</p>
+                                <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#vulture-info" ng-click="list.changeActiveVulture(vulture)">Learn More</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal" id="vulture-info">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>{{list.activeVulture.type}}</h2>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-xs-8 col-xs-offset-2">
+                                    <img ng-src="{{list.activeVulture.image_url}}" class="img-rounded img-responsive">
+                                </div>
+                            </div>
+                            <div class="row top-buffer">
+                                <div class="col-md-6">
+                                    <p><strong>Locations:</strong>{{list.activeVulture.locations}}</p>
+                                    <p><strong>Size:</strong>{{list.activeVulture.size}}</p>
+                                    <p><strong>Average Lifespan:</strong>{{list.activeVulture.lifespan}}</p>
+                                    <p><strong>Diet:</strong>{{list.activeVulture.diet}}</p>
+                                </div>
+                                <div class="col-xs-12 top-buffer">
+                                    <p>{{list.activeVulture.description}}</p>
+                                    <button class="btn btn-danger pull-right" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-controller="quizCtrl as quiz" ng-show="quiz.quizMetrics.quizActive">
+            <div class="row">
+                <div class="col-xs-8">
+                    <h2>Progress:</h2>
+                    <div class="btn-toolbar">
+                        <button class="btn" ng-repeat="question in quiz.dataService.quizQuestions" ng-class="{'btn-info': question.selected !== null, 'btn-danger':question.selected === null}" ng-click="quiz.setActiveQuestion($index)"><span class="glyphicon" ng-class="{'glyphicon-pencil':question.selected !== null, 'glyphicon-question-sign':question.selected === null}">
+
+                        </span></button>
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <div class="row">
+                        <h4>Legend:</h4>
+                        <div class="col-sm-4">
+                            <button class="btn btn-info"><span class="glyphicon glyphicon-pencil"></span></button>
+                            <p>Answered</p>
+                        </div>
+                        <div class="col-sm-4">
+                            <button class="btn btn-danger"><span class="glyphicon glyphicon-question-sign"></span></button>
+                            <p>Unanswered</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="alert alert-danger" ng-show="quiz.error">
+                    <button class="close" ng-click="quiz.error = false">&times</button>
+                    Error! You have not answered all of the questions!
+                </div>
+                <h3>Question:</h3>
+                <div class="well well-sm" ng-hide="quiz.finalize">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <h4>{{quiz.activeQuestion+1 + ". " + quiz.dataService.quizQuestions[quiz.activeQuestion].text}}</h4>
+                            <div class="row" ng-if="quiz.dataService.quizQuestions[quiz.activeQuestion].type === 'text'">
+                                <div ng-repeat="answer in quiz.dataService.quizQuestions[quiz.activeQuestion].possibilities" class="col-sm-6">
+                                    <h4 class="answer" ng-class="{'bg-info': $index === quiz.dataService.quizQuestions[quiz.activeQuestion].selected}" ng-click="quiz.selectAnswer($index)">{{answer.answer}}</h4>
+                                </div>
+                            </div>
+                            <div class="row" ng-if="quiz.dataService.quizQuestions[quiz.activeQuestion].type === 'image'">
+                                <div class="col-sm-6" ng-repeat="answer in quiz.dataService.quizQuestions[quiz.activeQuestion].possibilities">
+                                    <div class="image-answer" ng-class="{'image-selected': $index === quiz.dataService.quizQuestions[quiz.activeQuestion].selected}" ng-click="quiz.selectAnswer($index)">
+                                        <img ng-src="{{answer.answer}}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-warning" ng-click="quiz.questionAnswered()">Continue</button>
+                </div>
+                <div class="well well-sm" ng-show="quiz.finalize">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h3>Are you sure you want to submit your answers?</h3>
+                            <button ng-click="quiz.finalizeAnswers()" class="btn btn-success">Yes</button>
+                            <button ng-click="quiz.finalize = false" class="btn btn-danger">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-controller="resultsCtrl as results" ng-show="results.quizMetrics.resultsActive">
+            <div class="row">
+                <div class="col-xs-8">
+                    <h2>Results:</h2>
+                    <div class="btn-toolbar">
+                        <button class="btn" ng-repeat="question in results.dataService.quizQuestions" ng-class="{'btn-success':question.correct, 'btn-danger':!question.correct}" ng-click="results.setActiveQuestion($index)">
+                            <span class="glyphicon" ng-class="{'glyphicon-ok':question.correct,'glyphicon-remove':!question.correct}"></span>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <div class="row">
+                        <h4>Legend:</h4>
+                        <div class="col-sm-4">
+                            <button class="btn btn-success">
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </button>
+                            <p>Correct</p>
+                        </div>
+                        <div class="col-sm-4">
+                            <button class="btn btn-danger">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                            <p>Incorrect</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 top-buffer">
+                    <h2>You Scored: {{results.quizMetrics.numCorrect}} / {{results.dataService.quizQuestions.length}}</h2>
+                    <h2><strong>{{results.calculatePercentage() | number:2}}%</strong></h2>
+                </div>
+            </div>
+            <div class="row">
+                <h3>Questions:</h3>
+                <div class="well well-sm">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <h4>{{results.activeQuestion + 1 + ". " + results.dataService.quizQuestions[results.activeQuestion].text}}</h4>
+                            <div class="row" ng-if="results.dataService.quizQuestions[results.activeQuestion].type === 'text'">
+                                <div class="col-sm-6" ng-repeat="answer in results.dataService.quizQuestions[results.activeQuestion].possibilities">
+                                    <h4 class="answer" ng-class="results.getAnswerClass($index)">
+                                        {{answer.answer}}
+                                        <p class="pull-right" ng-show="$index !== results.quizMetrics.correctAnswers[results.activeQuestion] && $index === results.dataService.quizQuestions[results.activeQuestion].selected">Your Answer</p>
+                                        <p class="pull-right" ng-show="$index===results.quizMetrics.correctAnswers[results.activeQuestion]">Correct Answer</p>
+                                    </h4>
+                                </div>
+                            </div>
+                            <div class="row" ng-if="results.dataService.quizQuestions[results.activeQuestion].type === 'image'">
+                                <div class=" col-sm-6 " ng-repeat="answer in results.dataService.quizQuestions[results.activeQuestion].possibilities ">
+                                    <div class="image-answer " ng-class="results.getAnswerClass($index) ">
+                                        <img ng-src="{{answer.answer}} ">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-lg" ng-click="results.reset()">
+                    Go Back to Facts
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js "></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js "></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js " integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS " crossorigin="anonymous "></script>
+    <script src="js/app.js "></script>
+    <script src="js/controllers/list.js "></script>
+    <script src="js/controllers/quiz.js "></script>
+    <script src="js/controllers/results.js "></script>
+    <script src="js/factories/quiz-metrics.js "></script>
+    <script src="js/factories/data-service.js "></script>
+</body>
+
+</html>
